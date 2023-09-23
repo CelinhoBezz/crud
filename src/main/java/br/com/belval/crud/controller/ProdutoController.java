@@ -43,14 +43,7 @@ public class ProdutoController {
 	
 	@GetMapping("/produto/{id}")
 	public String detalhe(@PathVariable int id, Model model) {
-		Produto encontrou = null;
-		for(Produto p : lista) {
-			if(p.getId() == id) {
-				//Encontrou o produto solicitado
-				encontrou = p;
-				break;
-			}
-		}
+		Produto encontrou = buscarPorId(id);
 		
 		if(encontrou != null) {
 			model.addAttribute("novoProduto", encontrou);
@@ -58,5 +51,17 @@ public class ProdutoController {
 		}
 		
 		return "produto-nao-encontrado";
+	}
+
+	private Produto buscarPorId(int id) {
+		Produto produto = null;
+		for(Produto p : lista) {
+			if(p.getId() == id) {
+				//Encontrou o produto solicitado
+				produto = p;
+				break;
+			}
+		}
+		return produto;
 	}
 }
