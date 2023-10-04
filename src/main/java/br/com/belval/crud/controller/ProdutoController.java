@@ -2,6 +2,7 @@ package br.com.belval.crud.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,34 +20,67 @@ public class ProdutoController {
 	private static int proxId = 1;
 
 	@GetMapping("/produto/novo")
-	public String novo() {
-		return "novo-produto";
+	public String novo(Model model) {
+		model.addAttribute("produto", new Produto());
+		return "produto";
+	}
+	
+	@GetMapping("/produto/{id}/edit")
+	public String editar(@PathVariable int id, Model model) {
+		
+		Produto produto = buscarPorId(id);
+		
+		if (produto == null) {
+			return "produto-nao-encontrado";
+		}
+		
+		model.addAttribute("produto", produto);
+		
+		return "produto";
 	}
 	
 	@PostMapping("/produto/novo")
 	public ModelAndView novo(Produto produto) {
 		ModelAndView modelAndView = new ModelAndView("novo-produto-criado");
 		
-		produto.setId(proxId++);
-		
-		lista.add(produto);
+		if (produto.getId() == 0) {
+			insert(produto);
+		} else {
+			update(produto);
+		}
 		
 		modelAndView.addObject("novoProduto", produto);
 		return modelAndView;
 	}
-	
+
+	private void insert(Produto produto) {
+		produto.setId(proxId++);
+		lista.add(produto);
+	}
+
+	private void update(Produto produto) {
+		ListIterator<Produto> it = lista.listIterator();
+		while(it.hasNext()) {
+			Produto encontrado = it.next();
+			if (encontrado.getId() == produto.getId()) {
+				it.remove();
+				it.add(produto);
+			}
+		}
+	}
+
 	@GetMapping("/produto/list")
 	public String list(Model model) {
 		model.addAttribute("produtos", lista);
-		return "Lista-produtos";
+		return "lista-produtos";
 	}
 	
 	@GetMapping("/produto/{id}")
 	public String detalhe(@PathVariable int id, Model model) {
-		Produto encontrou = buscarPorId(id);
+		Produto produto = buscarPorId(id);
 		
-		if(encontrou != null) {
-			model.addAttribute("novoProduto", encontrou);
+		if (produto != null) {
+			model.addAttribute("novoProduto", produto);
 			return "novo-produto-criado";
 		}
 		
@@ -54,14 +88,18 @@ public class ProdutoController {
 	}
 
 	private Produto buscarPorId(int id) {
-		Produto produto = null;
+		Produto encontrou = null;
 		for(Produto p : lista) {
-			if(p.getId() == id) {
-				//Encontrou o produto solicitado
-				produto = p;
+			if (p.getId() == id) {
+				//encontrou o produto solicitado
+				encontrou = p;
 				break;
 			}
 		}
-		return produto;
+		return encontrou;
 	}
+	
+	
+
+	
 }
