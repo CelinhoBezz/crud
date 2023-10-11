@@ -37,6 +37,9 @@
 				<td>
 					<a th:href="@{/produto/{id}/edit (id=${prod.id}) }">Editar</a>
 				</td>
+				<td>
+					<a th:href="@{/produto/{id}/delete (id=${prod.id}) }">Deletar</a>
+				</td>
 			</tr>
 		</table>
 		<a th:href="@{/produto/novo}">Novo</a>

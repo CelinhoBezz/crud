@@ -101,7 +101,19 @@ public class ProdutoController {
 		return encontrou;
 	}
 	
-	
+	@GetMapping("/produto/{id}/delete")
+	public ModelAndView deletar(@PathVariable int id) {
+		ModelAndView view = new ModelAndView("redirect:/produto/list");
+		ListIterator<Produto> it = lista.listIterator();
+		while(it.hasNext()) {
+			Produto encontrado = it.next();
+			if (encontrado.getId() == id) {
+				it.remove();
+				break;
+			}
+		}
+		return view;
+	}
 
 	
 }
